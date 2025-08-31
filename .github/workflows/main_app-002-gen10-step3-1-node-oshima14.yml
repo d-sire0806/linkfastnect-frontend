@@ -44,7 +44,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: node-app
-          path: .                 # ← カレントに展開（省略可。省略すると ./node-app/ ができる）
+          path: .          # ← カレント直下に展開
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
@@ -52,4 +52,4 @@ jobs:
           app-name: 'app-002-gen10-step3-1-node-oshima14'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_D172CE84931044BFA083275B9C094FD8 }}
-          package: node-app  
+          package: .        # ← ここを '.' に（重要！）
