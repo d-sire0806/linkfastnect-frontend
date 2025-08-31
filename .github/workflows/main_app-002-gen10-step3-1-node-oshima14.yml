@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: read #This is required for actions/checkout
 
     steps:
       - uses: actions/checkout@v4
@@ -21,35 +21,36 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v4
         with:
-          node-version: '18.x'   # ← 22.x から 18.x へ
+          node-version: '18.x'   # ← Azure App Service が安定している LTS を指定
 
-      - name: npm install, build, and test
-        run: |
-          npm ci
-          npm run build --if-present
-          npm run test --if-present
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js app
+        run: npm run build
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .                 # リポ直下を固める
+          path: .next               # ← Next.js のビルド成果物を指定
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
-
+    
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: node-app
-          path: .          # ← カレント直下に展開
+          path: .next
 
       - name: Deploy to Azure Web App
+        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'app-002-gen10-step3-1-node-oshima14'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_D172CE84931044BFA083275B9C094FD8 }}
-          package: .        # ← ここを '.' に（重要！）
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FRONT }}
+          package: .
