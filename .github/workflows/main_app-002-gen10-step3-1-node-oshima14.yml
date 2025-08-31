@@ -21,7 +21,7 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v4
         with:
-          node-version: '18.x'   # ← Azure App Service が安定している LTS を指定
+          node-version: '22.x'  # ← Azure App Service が安定している LTS を指定
 
       - name: Install dependencies
         run: npm ci
@@ -54,3 +54,4 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FRONT }}
           package: .
+
